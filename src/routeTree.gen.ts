@@ -15,11 +15,13 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StoreIndexRouteImport } from './routes/store/index'
+import { Route as StoreProfileRouteImport } from './routes/store/profile'
 import { Route as StoreCheckoutRouteImport } from './routes/store/checkout'
 import { Route as StoreCartRouteImport } from './routes/store/cart'
 import { Route as AppReturnsRouteImport } from './routes/_app/returns'
 import { Route as AppReportsRouteImport } from './routes/_app/reports'
 import { Route as AppProductsRouteImport } from './routes/_app/products'
+import { Route as AppOrdersRouteImport } from './routes/_app/orders'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCustomersRouteImport } from './routes/_app/customers'
 import { Route as AppReturnsIdRouteImport } from './routes/_app/returns.$id'
@@ -53,6 +55,11 @@ const StoreIndexRoute = StoreIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StoreRoute,
 } as any)
+const StoreProfileRoute = StoreProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => StoreRoute,
+} as any)
 const StoreCheckoutRoute = StoreCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -78,6 +85,11 @@ const AppProductsRoute = AppProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOrdersRoute = AppOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -101,11 +113,13 @@ export interface FileRoutesByFullPath {
   '/store': typeof StoreRouteWithChildren
   '/customers': typeof AppCustomersRoute
   '/dashboard': typeof AppDashboardRoute
+  '/orders': typeof AppOrdersRoute
   '/products': typeof AppProductsRoute
   '/reports': typeof AppReportsRoute
   '/returns': typeof AppReturnsRouteWithChildren
   '/store/cart': typeof StoreCartRoute
   '/store/checkout': typeof StoreCheckoutRoute
+  '/store/profile': typeof StoreProfileRoute
   '/store/': typeof StoreIndexRoute
   '/returns/$id': typeof AppReturnsIdRoute
 }
@@ -115,11 +129,13 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/customers': typeof AppCustomersRoute
   '/dashboard': typeof AppDashboardRoute
+  '/orders': typeof AppOrdersRoute
   '/products': typeof AppProductsRoute
   '/reports': typeof AppReportsRoute
   '/returns': typeof AppReturnsRouteWithChildren
   '/store/cart': typeof StoreCartRoute
   '/store/checkout': typeof StoreCheckoutRoute
+  '/store/profile': typeof StoreProfileRoute
   '/store': typeof StoreIndexRoute
   '/returns/$id': typeof AppReturnsIdRoute
 }
@@ -132,11 +148,13 @@ export interface FileRoutesById {
   '/store': typeof StoreRouteWithChildren
   '/_app/customers': typeof AppCustomersRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/orders': typeof AppOrdersRoute
   '/_app/products': typeof AppProductsRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/returns': typeof AppReturnsRouteWithChildren
   '/store/cart': typeof StoreCartRoute
   '/store/checkout': typeof StoreCheckoutRoute
+  '/store/profile': typeof StoreProfileRoute
   '/store/': typeof StoreIndexRoute
   '/_app/returns/$id': typeof AppReturnsIdRoute
 }
@@ -149,11 +167,13 @@ export interface FileRouteTypes {
     | '/store'
     | '/customers'
     | '/dashboard'
+    | '/orders'
     | '/products'
     | '/reports'
     | '/returns'
     | '/store/cart'
     | '/store/checkout'
+    | '/store/profile'
     | '/store/'
     | '/returns/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -163,11 +183,13 @@ export interface FileRouteTypes {
     | '/register'
     | '/customers'
     | '/dashboard'
+    | '/orders'
     | '/products'
     | '/reports'
     | '/returns'
     | '/store/cart'
     | '/store/checkout'
+    | '/store/profile'
     | '/store'
     | '/returns/$id'
   id:
@@ -179,11 +201,13 @@ export interface FileRouteTypes {
     | '/store'
     | '/_app/customers'
     | '/_app/dashboard'
+    | '/_app/orders'
     | '/_app/products'
     | '/_app/reports'
     | '/_app/returns'
     | '/store/cart'
     | '/store/checkout'
+    | '/store/profile'
     | '/store/'
     | '/_app/returns/$id'
   fileRoutesById: FileRoutesById
@@ -240,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoreIndexRouteImport
       parentRoute: typeof StoreRoute
     }
+    '/store/profile': {
+      id: '/store/profile'
+      path: '/profile'
+      fullPath: '/store/profile'
+      preLoaderRoute: typeof StoreProfileRouteImport
+      parentRoute: typeof StoreRoute
+    }
     '/store/checkout': {
       id: '/store/checkout'
       path: '/checkout'
@@ -273,6 +304,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof AppProductsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/orders': {
+      id: '/_app/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AppOrdersRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/dashboard': {
@@ -314,6 +352,7 @@ const AppReturnsRouteWithChildren = AppReturnsRoute._addFileChildren(
 interface AppRouteChildren {
   AppCustomersRoute: typeof AppCustomersRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppOrdersRoute: typeof AppOrdersRoute
   AppProductsRoute: typeof AppProductsRoute
   AppReportsRoute: typeof AppReportsRoute
   AppReturnsRoute: typeof AppReturnsRouteWithChildren
@@ -322,6 +361,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppCustomersRoute: AppCustomersRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppOrdersRoute: AppOrdersRoute,
   AppProductsRoute: AppProductsRoute,
   AppReportsRoute: AppReportsRoute,
   AppReturnsRoute: AppReturnsRouteWithChildren,
@@ -332,12 +372,14 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 interface StoreRouteChildren {
   StoreCartRoute: typeof StoreCartRoute
   StoreCheckoutRoute: typeof StoreCheckoutRoute
+  StoreProfileRoute: typeof StoreProfileRoute
   StoreIndexRoute: typeof StoreIndexRoute
 }
 
 const StoreRouteChildren: StoreRouteChildren = {
   StoreCartRoute: StoreCartRoute,
   StoreCheckoutRoute: StoreCheckoutRoute,
+  StoreProfileRoute: StoreProfileRoute,
   StoreIndexRoute: StoreIndexRoute,
 }
 

@@ -14,10 +14,12 @@ import { Logo, LogoMark } from "@/components/brand/Logo";
 import { useUIStore } from "@/stores/ui-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { Avatar } from "@/components/common/Avatar";
+import { ShoppingBag } from "lucide-react";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/returns",   label: "Returns",   icon: RotateCcw },
+  { to: "/orders", label: "Orders", icon: ShoppingBag },
   { to: "/customers",  label: "Customers", icon: Users }, 
   { to: "/products",  label: "Products",  icon: Package },
   { to: "/reports",   label: "Reports",   icon: BarChart3 },

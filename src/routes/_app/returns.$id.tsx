@@ -10,6 +10,8 @@ import { Avatar } from "@/components/common/Avatar";
 import { returns, customers } from "@/lib/mock/data";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useReturnStore } from "@/stores/return-store";
+import { useAuthStore } from "@/stores/auth-store";
 
 export const Route = createFileRoute("/_app/returns/$id")({
   component: ReturnDetail,
@@ -27,6 +29,9 @@ function ReturnDetail() {
   const [shipDeduct, setShipDeduct] = useState(false);
   const [note, setNote] = useState("");
   const total = Math.max(0, r.refundAmount - (r.refundAmount * restock) / 100 - (shipDeduct ? 9.99 : 0));
+  const updateStatus = useReturnStore((s) => s.updateStatus);
+  const addNote = useReturnStore((s) => s.addNote);
+  const adminName = useAuthStore((s) => s.user?.name ?? "Admin");
 
   return (
     <div className="space-y-6">
@@ -38,8 +43,16 @@ function ReturnDetail() {
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={r.status} large />
-          <Button className="bg-success text-success-foreground hover:bg-success/90" onClick={() => toast.success("Approved")}><Check className="mr-1 h-4 w-4" />Approve</Button>
-          <Button variant="outline" onClick={() => toast.message("Rejected")}><X className="mr-1 h-4 w-4" />Reject</Button>
+          <Button className="bg-success text-success-foreground hover:bg-success/90"
+            disabled={r.status === "approved" || r.status === "refunded"}
+            onClick={() => { updateStatus(r.id, "approved"); toast.success(`${r.id} approved`); }}>
+            <Check className="mr-1 h-4 w-4" />Approve
+          </Button>
+          <Button variant="outline" className="border-destructive/30 text-destructive hover:bg-destructive/10"
+            disabled={r.status === "rejected"}
+            onClick={() => { updateStatus(r.id, "rejected"); toast.message(`${r.id} rejected`); }}>
+            <X className="mr-1 h-4 w-4" />Reject
+          </Button>
           <Button variant="ghost" onClick={() => window.print()}><Printer className="mr-1 h-4 w-4" />Print</Button>
         </div>
       </div>
@@ -113,7 +126,12 @@ function ReturnDetail() {
             </ul>
             <div className="mt-4 space-y-2">
               <Textarea placeholder="Add internal note…" value={note} onChange={(e) => setNote(e.target.value)} />
-              <div className="flex justify-end"><Button size="sm" onClick={() => { if (note.trim()) { toast.success("Note posted"); setNote(""); } }}>Post Note</Button></div>
+              <div className="flex justify-end"><Button size="sm" onClick={() => {if (!note.trim()) return;
+              addNote(r.id, adminName, note.trim());
+                toast.success("Note added");
+                setNote("");
+              }}>Post Note</Button>
+              </div>
             </div>
           </section>
         </div>
@@ -147,7 +165,11 @@ function ReturnDetail() {
               <div className="flex items-center justify-between"><dt className="text-muted-foreground">Shipping deduction</dt><dd><Checkbox checked={shipDeduct} onCheckedChange={(v) => setShipDeduct(!!v)} /></dd></div>
               <div className="flex justify-between border-t pt-3 font-display text-lg font-semibold text-success"><dt>Total Refund</dt><dd>${total.toFixed(2)}</dd></div>
             </dl>
-            <Button className="mt-4 w-full bg-success text-success-foreground hover:bg-success/90" onClick={() => toast.success(`Refund of $${total.toFixed(2)} issued`)}>Issue Refund</Button>
+            <Button className="mt-4 w-full bg-success text-success-foreground hover:bg-success/90" onClick={() => {
+                updateStatus(r.id, "refunded");
+                toast.success(`Refund of $${total.toFixed(2)} issued for ${r.id}`);
+              }}>Issue Refund
+              </Button>
           </section>
         </aside>
       </div>

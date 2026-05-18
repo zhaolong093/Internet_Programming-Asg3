@@ -7,6 +7,7 @@ import { BarChart, Sparkline, StackedBar } from "@/components/charts/Charts";
 import { monthlyVolume, monthlyRefunds, reasonsBreakdown } from "@/lib/mock/data";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useReturnStore } from "@/stores/return-store";
 
 export const Route = createFileRoute("/_app/reports")({
   head: () => ({ meta: [{ title: "Reports — Lreturns" }] }),
@@ -17,6 +18,15 @@ const PRESETS = ["Last 7 days", "Last 30 days", "Last Quarter", "Custom"] as con
 
 function ReportsPage() {
   const [preset, setPreset] = useState<(typeof PRESETS)[number]>("Last 30 days");
+  const allReturns = useReturnStore((s) => s.returns);
+  const totalReturns = allReturns.length;
+  const totalApproved = allReturns.filter((r) => r.status === "approved" || r.status === "refunded").length;
+  const totalRejected = allReturns.filter((r) => r.status === "rejected").length;
+  const totalRefundValue = allReturns
+  .filter((r) => r.status === "refunded")
+  .reduce((s, r) => s + r.refundAmount, 0);
+  const approvalRate = totalReturns > 0 ? Math.round((totalApproved / totalReturns) * 100) : 0;
+
 
   function downloadCsv() {
     const rows = [["Month", "Total", "Approved", "Rejected", "Avg Days", "Refund Total", "Recovery %"]];
@@ -25,6 +35,7 @@ function ReportsPage() {
       const rejected = m.v - approved;
       rows.push([m.m, String(m.v), String(approved), String(rejected), (1.8 + i * 0.05).toFixed(1), `$${monthlyRefunds[i].v}`, `${Math.round(50 + Math.random() * 30)}%`]);
     });
+    
     const csv = rows.map((r) => r.join(",")).join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
     const a = document.createElement("a");
@@ -89,19 +100,20 @@ function ReportsPage() {
             </thead>
             <tbody>
               {monthlyVolume.map((m, i) => {
-                const approved = Math.round(m.v * 0.72);
+                const approved = Math.round(m.v * (approvalRate / 100));
+                const rejected = m.v - approved;
                 return (
                   <tr key={m.m} className="border-t hover:bg-accent/30">
-                    <td className="px-4 py-3">{m.m}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">{m.v}</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-success">{approved}</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-destructive">{m.v - approved}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">{(1.8 + i * 0.05).toFixed(1)}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">${monthlyRefunds[i].v.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">{Math.round(50 + Math.random() * 30)}%</td>
+                    <td className="px-4 py-3 font-medium">{m.m}</td>
+                    <td className="px-4 py-3 tabular-nums text-right">{m.v}</td>
+                    <td className="px-4 py-3 tabular-nums text-right text-success">{approved}</td>
+                    <td className="px-4 py-3 tabular-nums text-right text-destructive">{rejected}</td>
+                    <td className="px-4 py-3 tabular-nums text-right">{(1.8 + i * 0.05).toFixed(1)} days</td>
+                    <td className="px-4 py-3 tabular-nums text-right">${monthlyRefunds[i].v.toLocaleString()}</td>
+                    <td className="px-4 py-3 tabular-nums text-right">{approvalRate}%</td>
                   </tr>
                 );
-              })}
+                })}
             </tbody>
           </table>
         </div>

@@ -31,6 +31,7 @@ function CheckoutPage() {
   const [placing, setPlacing] = useState(false);
   const [orderNum] = useState(() => "ORD-" + Math.random().toString(36).slice(2, 8).toUpperCase());
   const placeOrder = useOrderStore((s) => s.placeOrder);
+  const saveOrder = useOrderStore((s) => s.placeOrder);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const total = subtotal * 1.1;
@@ -67,8 +68,10 @@ function CheckoutPage() {
     if (!validatePayment()) return;
     setPlacing(true);
     await new Promise((r) => setTimeout(r, 1200));
+    const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+    const total = subtotal * 1.1;
     // [BACKEND HOOK] POST /api/orders
-    placeOrder({
+    saveOrder({
       customerName: user?.name ?? "Guest",
       customerEmail: user?.email ?? "",
       items: items.map((i) => ({ id: i.id, name: i.name, sku: i.sku, qty: i.qty, price: i.price })),
@@ -83,6 +86,7 @@ function CheckoutPage() {
         postcode: address.postcode,
         country: address.country,
       },
+      adminNote: ""
     });
     clear();
     setStep("done");

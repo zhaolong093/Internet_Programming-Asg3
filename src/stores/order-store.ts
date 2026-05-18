@@ -1,5 +1,10 @@
 import { create } from "zustand";
 
+export type OrderStatus = 
+                        "pending" | 
+                        "processing" | "shipped" | 
+                        "delivered" | "cancelled";
+
 export interface OrderItem {
   id: string;
   name: string;
@@ -25,12 +30,16 @@ export interface Order {
     country: string;
   };
   placedAt: string;
-  status: "processing" | "shipped" | "delivered" | "cancelled";
+  status: OrderStatus;
+  adminNote: string;
 }
 
 interface OrderState {
   orders: Order[];
   placeOrder: (o: Omit<Order, "id" | "placedAt" | "status">) => Order;
+  updateStatus: (id: string, status: OrderStatus) => void;
+  updateNote: (id: string, note: string) => void;
+  deleteOrder: (id: string) => void;
 }
 
 const STORAGE_KEY = "lreturns_orders";
@@ -55,11 +64,27 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       ...o,
       id: "ORD-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
       placedAt: new Date().toISOString(),
-      status: "processing",
+      status: "pending",
+      adminNote: "",
     };
     const updated = [order, ...get().orders];
     save(updated);
     set({ orders: updated });
     return order;
+  },
+  updateStatus: (id, status) => {
+    const updated = get().orders.map((o) => (o.id === id ? { ...o, status } : o));
+    save(updated);
+    set({ orders: updated });
+  },
+  updateNote: (id, note) => {
+    const updated = get().orders.map((o) => (o.id === id ? { ...o, adminNote: note } : o));
+    save(updated);
+    set({ orders: updated });
+  },
+  deleteOrder: (id) => {
+    const updated = get().orders.filter((o) => o.id !== id);
+    save(updated);
+    set({ orders: updated });
   },
 }));
