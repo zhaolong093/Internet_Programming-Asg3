@@ -12,9 +12,8 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppShell() {
-  const navigate = useNavigate();
   const isAuth = useAuthStore((s) => s.isAuthenticated);
-  const role = useAuthStore((s) => s.user?.role); 
+  const role = useAuthStore((s) => s.user?.role);
   const hydrate = useAuthStore((s) => s.hydrate);
   const [ready, setReady] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -24,22 +23,27 @@ function AppShell() {
     setReady(true);
   }, [hydrate]);
 
-  if (!ready) return <div className="min-h-screen bg-background" />;
-  if (!isAuth) { navigate({ to: "/login" }); return null; }
-  if (ready && isAuth && role === "customer") {
-    navigate({ to: "/store" });
-    return null;
-  }
+  // Navigation MUST be in useEffect — never during render
+  useEffect(() => {
+    if (!ready) return;
+    if (!isAuth) {
+      window.location.replace("/login");
+      return;
+    }
+    if (role === "customer") {
+      window.location.replace("/store");
+    }
+  }, [ready, isAuth, role]);
 
+  if (!ready) return <div className="min-h-screen bg-background" />;
+  if (!isAuth || role === "customer") return null;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
       <AppSidebar />
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent side="left" className="w-64 p-0">
-          <div className="lg:block">
-            <AppSidebar />
-          </div>
+          <AppSidebar />
         </SheetContent>
       </Sheet>
       <div className="flex min-w-0 flex-1 flex-col">

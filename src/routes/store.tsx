@@ -49,16 +49,24 @@ function StoreShell() {
                   {user.name.split(" ")[0]}
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-xl border bg-card p-1 shadow-lg">
-                    <div className="px-3 py-2 text-xs text-muted-foreground border-b mb-1">{user.email}
-                <Link to="/store/profile" onClick={() => setMenuOpen(false)}
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent">
-                <User className="h-4 w-4" /> My Profile
-                </Link> 
+                  <div className="absolute right-0 mt-2 w-52 rounded-xl border bg-card p-1 shadow-lg">
+                    {/* Email — header, not clickable */}
+                    <div className="px-3 py-2 text-xs text-muted-foreground border-b mb-1 truncate">
+                      {user.email}
                     </div>
-                    <button onClick={() => { logout(); setMenuOpen(false); }}
-                      className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-destructive/10">
-                        
+                    {/* My Profile */}
+                    <Link
+                      to="/store/profile"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent"
+                    >
+                      <User className="h-4 w-4" /> My Profile
+                    </Link>
+                    {/* Sign out */}
+                    <button
+                      onClick={() => { logout(); setMenuOpen(false); }}
+                      className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-destructive/10"
+                    >
                       <LogOut className="h-4 w-4" /> Sign out
                     </button>
                   </div>

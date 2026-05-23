@@ -73,7 +73,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     const token = "mock-" + Math.random().toString(36).slice(2);
     if (typeof window !== "undefined") {
       localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify(existing));
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
     }
     set({ user, token, isAuthenticated: true });
     return user;

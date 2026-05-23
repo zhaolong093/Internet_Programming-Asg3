@@ -20,6 +20,7 @@ import { Route as StoreCheckoutRouteImport } from './routes/store/checkout'
 import { Route as StoreCartRouteImport } from './routes/store/cart'
 import { Route as AppReturnsRouteImport } from './routes/_app/returns'
 import { Route as AppReportsRouteImport } from './routes/_app/reports'
+import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppProductsRouteImport } from './routes/_app/products'
 import { Route as AppOrdersRouteImport } from './routes/_app/orders'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
@@ -80,6 +81,11 @@ const AppReportsRoute = AppReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProductsRoute = AppProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/orders': typeof AppOrdersRoute
   '/products': typeof AppProductsRoute
+  '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/returns': typeof AppReturnsRouteWithChildren
   '/store/cart': typeof StoreCartRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/orders': typeof AppOrdersRoute
   '/products': typeof AppProductsRoute
+  '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/returns': typeof AppReturnsRouteWithChildren
   '/store/cart': typeof StoreCartRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/orders': typeof AppOrdersRoute
   '/_app/products': typeof AppProductsRoute
+  '/_app/profile': typeof AppProfileRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/returns': typeof AppReturnsRouteWithChildren
   '/store/cart': typeof StoreCartRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/orders'
     | '/products'
+    | '/profile'
     | '/reports'
     | '/returns'
     | '/store/cart'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/orders'
     | '/products'
+    | '/profile'
     | '/reports'
     | '/returns'
     | '/store/cart'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/orders'
     | '/_app/products'
+    | '/_app/profile'
     | '/_app/reports'
     | '/_app/returns'
     | '/store/cart'
@@ -299,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppReportsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/products': {
       id: '/_app/products'
       path: '/products'
@@ -354,6 +373,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppOrdersRoute: typeof AppOrdersRoute
   AppProductsRoute: typeof AppProductsRoute
+  AppProfileRoute: typeof AppProfileRoute
   AppReportsRoute: typeof AppReportsRoute
   AppReturnsRoute: typeof AppReturnsRouteWithChildren
 }
@@ -363,6 +383,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppOrdersRoute: AppOrdersRoute,
   AppProductsRoute: AppProductsRoute,
+  AppProfileRoute: AppProfileRoute,
   AppReportsRoute: AppReportsRoute,
   AppReturnsRoute: AppReturnsRouteWithChildren,
 }
