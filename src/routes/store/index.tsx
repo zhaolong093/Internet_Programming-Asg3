@@ -18,6 +18,7 @@ function StorePage() {
   const loading = useProductStore((s) => s.loading);
   const error = useProductStore((s) => s.error);
   const loadProducts = useProductStore((s) => s.loadProducts);
+  const cartError = useCartStore((s) => s.error);
   const { items, add, updateQty } = useCartStore();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -104,6 +105,11 @@ function StorePage() {
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
+        </div>
+      )}
+      {cartError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {cartError}
         </div>
       )}
 

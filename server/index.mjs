@@ -2,6 +2,8 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { connectDatabase } from "./db.mjs";
+import { cartRouter } from "./routes/carts.mjs";
+import { orderRouter } from "./routes/orders.mjs";
 import { productRouter } from "./routes/products.mjs";
 
 const app = express();
@@ -16,6 +18,8 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/products", productRouter);
+app.use("/api/carts", cartRouter);
+app.use("/api/orders", orderRouter);
 
 app.use((error, _req, res, _next) => {
   console.error(error);
