@@ -46,7 +46,10 @@ const products = [
 ];
 
 await connectDatabase();
-await Product.deleteMany({});
-await Product.insertMany(products);
-console.log(`Seeded ${products.length} products.`);
+await Promise.all(
+  products.map(({ sku, ...product }) =>
+    Product.findOneAndUpdate({ sku }, { sku, ...product }, { upsert: true, new: true }),
+  ),
+);
+console.log(`Seeded or updated ${products.length} products.`);
 await Product.db.close();
