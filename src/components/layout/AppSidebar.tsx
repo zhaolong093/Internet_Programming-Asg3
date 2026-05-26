@@ -8,21 +8,23 @@ import {
   HelpCircle,
   PanelLeftClose,
   PanelLeft,
+  ShoppingBag,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo, LogoMark } from "@/components/brand/Logo";
 import { useUIStore } from "@/stores/ui-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { Avatar } from "@/components/common/Avatar";
-import { ShoppingBag } from "lucide-react";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/returns",   label: "Returns",   icon: RotateCcw },
+  { to: "/returns", label: "Returns", icon: RotateCcw },
   { to: "/orders", label: "Orders", icon: ShoppingBag },
-  { to: "/customers",  label: "Customers", icon: Users }, 
-  { to: "/products",  label: "Products",  icon: Package },
-  { to: "/reports",   label: "Reports",   icon: BarChart3 },
+  { to: "/carts", label: "Carts", icon: ShoppingCart },
+  { to: "/customers", label: "Customers", icon: Users },
+  { to: "/products", label: "Products", icon: Package },
+  { to: "/reports", label: "Reports", icon: BarChart3 },
 ] as const;
 
 export function AppSidebar() {
@@ -38,7 +40,12 @@ export function AppSidebar() {
         collapsed ? "w-16" : "w-60",
       )}
     >
-      <div className={cn("flex h-16 items-center border-b px-3", collapsed ? "justify-center" : "justify-between")}>
+      <div
+        className={cn(
+          "flex h-16 items-center border-b px-3",
+          collapsed ? "justify-center" : "justify-between",
+        )}
+      >
         {collapsed ? <LogoMark className="h-9 w-9 text-lg" /> : <Logo size="md" />}
         <button
           onClick={toggle}
@@ -89,12 +96,19 @@ export function AppSidebar() {
           {!collapsed && "Help & Support"}
         </button>
         {user && (
-          <div className={cn("flex items-center gap-2.5 rounded-md bg-muted/40 p-2", collapsed && "justify-center")}>
+          <div
+            className={cn(
+              "flex items-center gap-2.5 rounded-md bg-muted/40 p-2",
+              collapsed && "justify-center",
+            )}
+          >
             <Avatar name={user.name} size="sm" />
             {!collapsed && (
               <div className="min-w-0">
                 <div className="truncate text-xs font-medium">{user.name}</div>
-                <div className="truncate text-[11px] capitalize text-muted-foreground">{user.role}</div>
+                <div className="truncate text-[11px] capitalize text-muted-foreground">
+                  {user.role}
+                </div>
               </div>
             )}
           </div>

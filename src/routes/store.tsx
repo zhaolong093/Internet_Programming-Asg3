@@ -3,7 +3,7 @@ import { ShoppingCart, RotateCcw, LogIn, User, LogOut } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
 
 export const Route = createFileRoute("/store")({
@@ -13,9 +13,14 @@ export const Route = createFileRoute("/store")({
 function StoreShell() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const setCartCustomer = useCartStore((s) => s.setCustomer);
   const cartCount = useCartStore((s) => s.items.reduce((t, i) => t + i.qty, 0));
   const path = useRouterState({ select: (r) => r.location.pathname });
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setCartCustomer(user);
+  }, [setCartCustomer, user]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -26,7 +31,12 @@ function StoreShell() {
             <Logo size="md" />
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-            <Link to="/store" className={path === "/store" ? "text-primary" : "text-muted-foreground hover:text-foreground"}>
+            <Link
+              to="/store"
+              className={
+                path === "/store" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              }
+            >
               Shop
             </Link>
           </nav>
@@ -43,8 +53,10 @@ function StoreShell() {
             </Link>
             {user ? (
               <div className="relative">
-                <button onClick={() => setMenuOpen((v) => !v)}
-                  className="flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1.5 text-sm font-medium hover:bg-accent">
+                <button
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className="flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1.5 text-sm font-medium hover:bg-accent"
+                >
                   <User className="h-4 w-4" />
                   {user.name.split(" ")[0]}
                 </button>
@@ -64,7 +76,10 @@ function StoreShell() {
                     </Link>
                     {/* Sign out */}
                     <button
-                      onClick={() => { logout(); setMenuOpen(false); }}
+                      onClick={() => {
+                        logout();
+                        setMenuOpen(false);
+                      }}
                       className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-destructive/10"
                     >
                       <LogOut className="h-4 w-4" /> Sign out

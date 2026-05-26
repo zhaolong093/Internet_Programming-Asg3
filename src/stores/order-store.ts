@@ -1,9 +1,6 @@
 import { create } from "zustand";
 
-export type OrderStatus = 
-                        "pending" | 
-                        "processing" | "shipped" | 
-                        "delivered" | "cancelled";
+export type OrderStatus = "pending" | "processing" | "shipped" | "delivered" | "cancelled";
 
 export interface OrderItem {
   id: string;
@@ -34,57 +31,79 @@ export interface Order {
   adminNote: string;
 }
 
+type NewOrder = Omit<Order, "id" | "placedAt" | "status" | "subtotal" | "tax" | "total">;
+
 interface OrderState {
   orders: Order[];
-  placeOrder: (o: Omit<Order, "id" | "placedAt" | "status">) => Order;
-  updateStatus: (id: string, status: OrderStatus) => void;
-  updateNote: (id: string, note: string) => void;
-  deleteOrder: (id: string) => void;
+  loading: boolean;
+  error: string | null;
+  loadOrders: () => Promise<void>;
+  placeOrder: (order: NewOrder) => Promise<Order>;
+  updateStatus: (id: string, status: OrderStatus) => Promise<void>;
+  updateNote: (id: string, note: string) => Promise<void>;
+  deleteOrder: (id: string) => Promise<void>;
 }
 
-const STORAGE_KEY = "lreturns_orders";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-function load(): Order[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-}
-
-function save(orders: Order[]) {
-  if (typeof window !== "undefined")
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    headers: { "Content-Type": "application/json" },
+    ...init,
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ message: "Request failed." }));
+    throw new Error(body.message || "Request failed.");
+  }
+  if (response.status === 204) return undefined as T;
+  return response.json();
 }
 
 export const useOrderStore = create<OrderState>((set, get) => ({
-  orders: load(),
-  placeOrder: (o) => {
-    const order: Order = {
-      ...o,
-      id: "ORD-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
-      placedAt: new Date().toISOString(),
-      status: "pending",
-      adminNote: "",
-    };
-    const updated = [order, ...get().orders];
-    save(updated);
-    set({ orders: updated });
+  orders: [],
+  loading: false,
+  error: null,
+
+  loadOrders: async () => {
+    set({ loading: true, error: null });
+    try {
+      const orders = await request<Order[]>("/api/orders");
+      set({ orders, loading: false });
+    } catch (error) {
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : "Could not load orders.",
+      });
+    }
+  },
+
+  placeOrder: async (newOrder) => {
+    const order = await request<Order>("/api/orders", {
+      method: "POST",
+      body: JSON.stringify(newOrder),
+    });
+    set({ orders: [order, ...get().orders], error: null });
     return order;
   },
-  updateStatus: (id, status) => {
-    const updated = get().orders.map((o) => (o.id === id ? { ...o, status } : o));
-    save(updated);
-    set({ orders: updated });
+
+  updateStatus: async (id, status) => {
+    const order = await request<Order>(`/api/orders/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    });
+    set({ orders: get().orders.map((current) => (current.id === id ? order : current)) });
   },
-  updateNote: (id, note) => {
-    const updated = get().orders.map((o) => (o.id === id ? { ...o, adminNote: note } : o));
-    save(updated);
-    set({ orders: updated });
+
+  updateNote: async (id, adminNote) => {
+    const order = await request<Order>(`/api/orders/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ adminNote }),
+    });
+    set({ orders: get().orders.map((current) => (current.id === id ? order : current)) });
   },
-  deleteOrder: (id) => {
-    const updated = get().orders.filter((o) => o.id !== id);
-    save(updated);
-    set({ orders: updated });
+
+  deleteOrder: async (id) => {
+    await request<void>(`/api/orders/${encodeURIComponent(id)}`, { method: "DELETE" });
+    set({ orders: get().orders.filter((order) => order.id !== id) });
   },
 }));
