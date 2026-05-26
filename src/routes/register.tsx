@@ -54,14 +54,14 @@ function RegisterPage() {
     await new Promise((r) => setTimeout(r, 700));
     try {
       // After register, auto-login the new customer
-      const user = register(form.name, form.email);
+      const user = await register(form.name, form.email, form.password);
       // Add the user to the user store
       addUser(user);
       // Override role to customer for self-registered accounts
       // [BACKEND HOOK] role will come from the API response
       toast.success("Account created! Welcome to Lreturns.");
-      navigate({ to: "/store" });
-    } catch {
+      window.location.replace("/store"); // Force full reload to reset all stores and avoid SSR hydration issues
+    } catch (err) {
       toast.error("Registration failed. Please try again.");
     } finally {
       setSubmitting(false);

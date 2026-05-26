@@ -26,6 +26,7 @@ export const Route = createFileRoute("/_app/dashboard")({
 });
 
 function DashboardPage() {
+  const loadOrders  = useOrderStore((s) => s.loadOrders);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -33,6 +34,10 @@ function DashboardPage() {
   const updateStatus = useReturnStore((s) => s.updateStatus);
   const orders = useOrderStore((s) => s.orders);
   const users = useUserStore((s) => s.users);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   useEffect(() => {
     const id = setTimeout(() => setLoading(false), 600);

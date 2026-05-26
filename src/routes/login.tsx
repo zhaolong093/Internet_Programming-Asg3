@@ -40,7 +40,7 @@ function LoginPage() {
 
   const role = useAuthStore((s) => s.user?.role);
   useEffect(() => {
-    if (isAuth) navigate({ to: role === "customer" ? "/store" : "/dashboard" });
+    if (isAuth) window.location.replace(role === "customer" ? "/store" : "/dashboard"); // Force full reload to reset all stores and avoid SSR hydration issues
   }, [isAuth, role, navigate]);
 
   function validate(field?: "email" | "password") {
@@ -65,11 +65,10 @@ function LoginPage() {
     // [BACKEND HOOK] POST /api/auth/login { email, password }
     await new Promise((r) => setTimeout(r, 700));
     try {
-      const user = login(email);
+      const user = await login(email, undefined, password);
       addUser(user); 
       toast.success(`Welcome back, ${user.name}!`);
-      const dest = user.role === "customer" ? "/store" : "/dashboard";
-      navigate({ to: dest });
+      window.location.replace(user.role === "customer" ? "/store" : "/dashboard"); // Force full reload to reset all stores and avoid SSR hydration issues
     } catch {
       toast.error("Invalid email or password. Please try again.");
     } finally {
@@ -185,19 +184,19 @@ function LoginPage() {
               )}
             </Button>
 
-            <div className="relative my-2 text-center text-xs text-muted-foreground">
+            {/* <div className="relative my-2 text-center text-xs text-muted-foreground">
               <span className="relative z-10 bg-card px-2">or continue with</span>
               <span className="absolute inset-x-0 top-1/2 h-px bg-border" />
-            </div>
+            </div> */}
 
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <Button variant="outline" type="button" onClick={() => toast.message("SSO is mocked in this demo.")}>
                 <GoogleIcon /> Google
               </Button>
               <Button variant="outline" type="button" onClick={() => toast.message("SSO is mocked in this demo.")}>
                 <MicrosoftIcon /> Microsoft
               </Button>
-            </div>
+            </div> */}
 
             <p className="pt-2 text-center text-xs text-muted-foreground">
               Don't have an account?{" "}
