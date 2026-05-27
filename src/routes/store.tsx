@@ -1,10 +1,11 @@
 import { createFileRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
-import { ShoppingCart, RotateCcw, LogIn, User, LogOut } from "lucide-react";
+import { ShoppingCart, LogIn, User, LogOut, Moon, Sun } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/stores/cart-store";
+import { useUIStore } from "@/stores/ui-store";
 
 export const Route = createFileRoute("/store")({
   component: StoreShell,
@@ -13,6 +14,9 @@ export const Route = createFileRoute("/store")({
 function StoreShell() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  //change theme icon based on current theme
+  const theme = useUIStore((s) => s.theme);
+  const toggleTheme = useUIStore((s) => s.toggleTheme);
   const setCartCustomer = useCartStore((s) => s.setCustomer);
   const cartCount = useCartStore((s) => s.items.reduce((t, i) => t + i.qty, 0));
   const path = useRouterState({ select: (r) => r.location.pathname });
@@ -41,6 +45,14 @@ function StoreShell() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
             <Link to="/store/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
@@ -77,7 +89,7 @@ function StoreShell() {
                     {/* Sign out */}
                     <button
                       onClick={() => {
-                        logout();
+                        void logout();
                         setMenuOpen(false);
                       }}
                       className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-destructive/10"

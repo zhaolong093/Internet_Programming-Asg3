@@ -50,8 +50,7 @@ function StorePage() {
   return (
     <div className="space-y-6">
       {/* Hero strip */}
-      <div className="rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-8 py-10 border">
-        <h1 className="font-display text-3xl font-bold">Welcome to Lreturns Shop</h1>
+      <div className="rounded-2xl border bg-gradient-to-r from-primary/10 via-card to-background px-8 py-10 shadow-sm dark:from-primary/20 dark:via-card dark:to-background">        <h1 className="font-display text-3xl font-bold">Welcome to Lreturns Shop</h1>
         <p className="mt-2 text-muted-foreground">
           Browse our catalog and enjoy hassle-free returns.
         </p>
@@ -127,10 +126,10 @@ function StorePage() {
             return (
               <div
                 key={p.id}
-                className="flex flex-col rounded-xl border bg-card shadow-sm transition hover:shadow-md overflow-hidden"
+                className="flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition hover:border-primary/40 hover:shadow-md"
               >
-                <div className="flex h-44 items-center justify-center bg-muted/40">
-                  <Package className="h-16 w-16 text-muted-foreground/20" />
+                <div className="flex h-44 items-center justify-center bg-muted/50 dark:bg-background/45">
+                  <Package className="h-16 w-16 text-muted-foreground/25" />                  <Package className="h-16 w-16 text-muted-foreground/20" />
                 </div>
                 <div className="flex flex-1 flex-col p-4">
                   <Badge variant="secondary" className="mb-2 self-start text-[11px]">
