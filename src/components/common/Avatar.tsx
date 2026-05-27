@@ -1,8 +1,14 @@
 import { cn } from "@/lib/utils";
 
 const palette = [
-  "bg-indigo-500", "bg-emerald-500", "bg-amber-500", "bg-rose-500",
-  "bg-sky-500", "bg-violet-500", "bg-fuchsia-500", "bg-teal-500",
+  "bg-indigo-500",
+  "bg-emerald-500",
+  "bg-amber-500",
+  "bg-rose-500",
+  "bg-sky-500",
+  "bg-violet-500",
+  "bg-fuchsia-500",
+  "bg-teal-500",
 ];
 
 function colorFor(seed: string) {
@@ -28,7 +34,11 @@ export function Avatar({
       .map((p) => p[0]?.toUpperCase())
       .join("") || "?";
   const dims =
-    size === "sm" ? "h-7 w-7 text-[11px]" : size === "lg" ? "h-12 w-12 text-base" : "h-9 w-9 text-xs";
+    size === "sm"
+      ? "h-7 w-7 text-[11px]"
+      : size === "lg"
+        ? "h-12 w-12 text-base"
+        : "h-9 w-9 text-xs";
   return (
     <span
       className={cn(

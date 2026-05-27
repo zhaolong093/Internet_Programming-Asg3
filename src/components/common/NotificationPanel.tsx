@@ -31,7 +31,9 @@ export function NotificationPanel() {
         </SheetHeader>
         <div className="flex-1 overflow-auto">
           {items.length === 0 ? (
-            <div className="p-12 text-center text-sm text-muted-foreground">No new notifications</div>
+            <div className="p-12 text-center text-sm text-muted-foreground">
+              No new notifications
+            </div>
           ) : (
             <ul>
               {items.map((n) => {
@@ -45,7 +47,12 @@ export function NotificationPanel() {
                       !n.read && "bg-primary/5",
                     )}
                   >
-                    <span className={cn("flex h-7 w-7 items-center justify-center rounded-full", m.color)}>
+                    <span
+                      className={cn(
+                        "flex h-7 w-7 items-center justify-center rounded-full",
+                        m.color,
+                      )}
+                    >
                       <Icon className="h-3.5 w-3.5" />
                     </span>
                     <div className="min-w-0 flex-1">

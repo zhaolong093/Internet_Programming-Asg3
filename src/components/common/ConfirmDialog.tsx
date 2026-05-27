@@ -41,7 +41,8 @@ export function ConfirmDialog({
           <AlertDialogAction
             onClick={onConfirm}
             className={cn(
-              tone === "danger" && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+              tone === "danger" &&
+                "bg-destructive text-destructive-foreground hover:bg-destructive/90",
               tone === "success" && "bg-success text-success-foreground hover:bg-success/90",
             )}
           >

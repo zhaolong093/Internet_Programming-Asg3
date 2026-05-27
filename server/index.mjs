@@ -10,9 +10,8 @@ import { userRouter } from "./routes/users.mjs";
 
 const app = express();
 const port = Number(process.env.API_PORT || 4000);
-// const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:8080";
-// app.use(cors({ origin: clientOrigin }));
-app.use(cors());
+const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:8080";
+app.use(cors({ origin: clientOrigin }));
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {

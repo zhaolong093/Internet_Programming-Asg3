@@ -20,6 +20,7 @@ export const Route = createFileRoute("/_app/returns")({
 });
 
 const STATUSES: ReturnStatus[] = ["pending", "approved", "rejected", "processing", "refunded"];
+type SortOption = "newest" | "oldest" | "status" | "customer";
 
 function ReturnsList() {
   const allReturns = useReturnStore((s) => s.returns);
@@ -29,7 +30,7 @@ function ReturnsList() {
   const [active, setActive] = useState<Set<ReturnStatus>>(new Set());
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [sort, setSort] = useState<"newest" | "oldest" | "status" | "customer">("newest");
+  const [sort, setSort] = useState<SortOption>("newest");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
   const perPage = 12;
@@ -41,7 +42,13 @@ function ReturnsList() {
 
   const filtered = allReturns
     .filter((r) => active.size === 0 || active.has(r.status))
-    .filter((r) => !search || r.id.toLowerCase().includes(search.toLowerCase()) || r.customer.name.toLowerCase().includes(search.toLowerCase()) || r.product.name.toLowerCase().includes(search.toLowerCase()))
+    .filter(
+      (r) =>
+        !search ||
+        r.id.toLowerCase().includes(search.toLowerCase()) ||
+        r.customer.name.toLowerCase().includes(search.toLowerCase()) ||
+        r.product.name.toLowerCase().includes(search.toLowerCase()),
+    )
     .filter((r) => !from || new Date(r.submittedAt) >= new Date(from))
     .filter((r) => !to || new Date(r.submittedAt) <= new Date(to))
     .sort((a, b) => {
@@ -58,12 +65,16 @@ function ReturnsList() {
 
   // ── Status counts for pill badges ────────────────────────────────────────
   const statusCounts = Object.fromEntries(
-    STATUSES.map((s) => [s, allReturns.filter((r) => r.status === s).length])
+    STATUSES.map((s) => [s, allReturns.filter((r) => r.status === s).length]),
   ) as Record<ReturnStatus, number>;
 
   function toggleStatus(s: ReturnStatus) {
     const next = new Set(active);
-    next.has(s) ? next.delete(s) : next.add(s);
+    if (next.has(s)) {
+      next.delete(s);
+    } else {
+      next.add(s);
+    }
     setActive(next);
     setPage(1);
   }
@@ -72,7 +83,11 @@ function ReturnsList() {
   }
   function toggleOne(id: string) {
     const next = new Set(selected);
-    next.has(id) ? next.delete(id) : next.add(id);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
     setSelected(next);
   }
 
@@ -90,12 +105,22 @@ function ReturnsList() {
   function exportCsv() {
     const rows = [["Return ID", "Customer", "Product", "Reason", "Status", "Refund", "Submitted"]];
     filtered.forEach((r) => {
-      rows.push([r.id, r.customer.name, r.product.name, r.reason, r.status, `$${r.refundAmount.toFixed(2)}`, format(new Date(r.submittedAt), "yyyy-MM-dd")]);
+      rows.push([
+        r.id,
+        r.customer.name,
+        r.product.name,
+        r.reason,
+        r.status,
+        `$${r.refundAmount.toFixed(2)}`,
+        format(new Date(r.submittedAt), "yyyy-MM-dd"),
+      ]);
     });
     const csv = rows.map((r) => r.join(",")).join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
     const a = document.createElement("a");
-    a.href = url; a.download = "returns.csv"; a.click();
+    a.href = url;
+    a.download = "returns.csv";
+    a.click();
     URL.revokeObjectURL(url);
     toast.success("CSV exported");
   }
@@ -104,7 +129,7 @@ function ReturnsList() {
     <div className="space-y-6">
       <PageHeader
         title="Returns Management"
-        subtitle={`${allReturns.length} total · ${allReturns.filter(r => r.status === "pending").length} pending`}
+        subtitle={`${allReturns.length} total · ${allReturns.filter((r) => r.status === "pending").length} pending`}
         actions={
           <>
             <Button variant="outline" onClick={exportCsv}>
@@ -119,29 +144,63 @@ function ReturnsList() {
 
       <div className="rounded-xl border bg-card p-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
-          <Input placeholder="Search by Return ID, customer, or product…" value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="h-9 w-72 max-w-full" />
+          <Input
+            placeholder="Search by Return ID, customer, or product…"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="h-9 w-72 max-w-full"
+          />
           <div className="flex flex-wrap items-center gap-1.5">
             {STATUSES.map((s) => (
-              <button key={s} onClick={() => toggleStatus(s)}
-                className={cn("rounded-full px-3 py-1 text-xs font-medium capitalize transition",
-                  active.has(s) ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent")}>
+              <button
+                key={s}
+                onClick={() => toggleStatus(s)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-xs font-medium capitalize transition",
+                  active.has(s)
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-accent",
+                )}
+              >
                 {s} <span className="ml-1 opacity-60">({statusCounts[s]})</span>
               </button>
             ))}
           </div>
-          <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-36" />
-          <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-36" />
-          <select value={sort} onChange={(e) => setSort(e.target.value as any)}
-            className="h-9 rounded-md border bg-background px-2 text-sm">
+          <Input
+            type="date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            className="h-9 w-36"
+          />
+          <Input
+            type="date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="h-9 w-36"
+          />
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortOption)}
+            className="h-9 rounded-md border bg-background px-2 text-sm"
+          >
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>
             <option value="status">Status</option>
             <option value="customer">Customer A–Z</option>
           </select>
           {filtersActive && (
-            <button className="ml-auto text-xs font-medium text-primary hover:underline"
-              onClick={() => { setActive(new Set()); setSearch(""); setFrom(""); setTo(""); }}>
+            <button
+              className="ml-auto text-xs font-medium text-primary hover:underline"
+              onClick={() => {
+                setActive(new Set());
+                setSearch("");
+                setFrom("");
+                setTo("");
+              }}
+            >
               Clear filters
             </button>
           )}
@@ -153,7 +212,12 @@ function ReturnsList() {
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="px-4 py-2"><Checkbox checked={visible.length > 0 && selected.size === visible.length} onCheckedChange={toggleAll} /></th>
+                <th className="px-4 py-2">
+                  <Checkbox
+                    checked={visible.length > 0 && selected.size === visible.length}
+                    onCheckedChange={toggleAll}
+                  />
+                </th>
                 <th className="px-4 py-2 text-left">Return ID</th>
                 <th className="px-4 py-2 text-left">Customer</th>
                 <th className="px-4 py-2 text-left">Product</th>
@@ -166,53 +230,112 @@ function ReturnsList() {
               </tr>
             </thead>
             <tbody>
-              {loading
-                ? Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} cols={10} />)
-                : visible.length === 0
-                ? <tr><td colSpan={10} className="px-4 py-10 text-center text-muted-foreground">No returns match your filters.</td></tr>
-                : visible.map((r) => (
-                    <tr key={r.id} className={cn("border-t hover:bg-accent/30", selected.has(r.id) && "bg-primary/5")}>
-                      <td className="px-4 py-3"><Checkbox checked={selected.has(r.id)} onCheckedChange={() => toggleOne(r.id)} /></td>
-                      <td className="px-4 py-3">
-                        <Link to="/returns/$id" params={{ id: r.id }} className="font-mono text-xs font-medium text-primary hover:underline">{r.id}</Link>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Avatar size="sm" name={r.customer.name} />
-                          <div className="min-w-0">
-                            <div className="truncate">{r.customer.name}</div>
-                            <div className="truncate text-xs text-muted-foreground">{r.customer.email}</div>
+              {loading ? (
+                Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} cols={10} />)
+              ) : visible.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="px-4 py-10 text-center text-muted-foreground">
+                    No returns match your filters.
+                  </td>
+                </tr>
+              ) : (
+                visible.map((r) => (
+                  <tr
+                    key={r.id}
+                    className={cn(
+                      "border-t hover:bg-accent/30",
+                      selected.has(r.id) && "bg-primary/5",
+                    )}
+                  >
+                    <td className="px-4 py-3">
+                      <Checkbox
+                        checked={selected.has(r.id)}
+                        onCheckedChange={() => toggleOne(r.id)}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        to="/returns/$id"
+                        params={{ id: r.id }}
+                        className="font-mono text-xs font-medium text-primary hover:underline"
+                      >
+                        {r.id}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Avatar size="sm" name={r.customer.name} />
+                        <div className="min-w-0">
+                          <div className="truncate">{r.customer.name}</div>
+                          <div className="truncate text-xs text-muted-foreground">
+                            {r.customer.email}
                           </div>
                         </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="line-clamp-1 max-w-[200px]">{r.product.name}</div>
-                        <div className="font-mono text-xs text-muted-foreground">{r.product.sku}</div>
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums">{r.qty}</td>
-                      <td className="px-4 py-3"><ReasonBadge reason={r.reason} /></td>
-                      <td className="px-4 py-3 text-right tabular-nums">${r.refundAmount.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{format(new Date(r.submittedAt), "MMM d, yyyy")}</td>
-                      <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
-                      <td className="px-4 py-3 text-right">
-                        <Link to="/returns/$id" params={{ id: r.id }}>
-                          <Button variant="ghost" size="sm">Review</Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="line-clamp-1 max-w-[200px]">{r.product.name}</div>
+                      <div className="font-mono text-xs text-muted-foreground">{r.product.sku}</div>
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums">{r.qty}</td>
+                    <td className="px-4 py-3">
+                      <ReasonBadge reason={r.reason} />
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums">
+                      ${r.refundAmount.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {format(new Date(r.submittedAt), "MMM d, yyyy")}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={r.status} />
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link to="/returns/$id" params={{ id: r.id }}>
+                        <Button variant="ghost" size="sm">
+                          Review
+                        </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t p-3 text-sm text-muted-foreground">
-          <div>Showing {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + perPage, filtered.length)} of {filtered.length} returns</div>
+          <div>
+            Showing {filtered.length === 0 ? 0 : start + 1}–
+            {Math.min(start + perPage, filtered.length)} of {filtered.length} returns
+          </div>
           <div className="flex items-center gap-1">
-            <Button size="sm" variant="outline" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>Prev</Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              Prev
+            </Button>
             {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => (
-              <Button key={i} size="sm" variant={page === i + 1 ? "default" : "ghost"} onClick={() => setPage(i + 1)}>{i + 1}</Button>
+              <Button
+                key={i}
+                size="sm"
+                variant={page === i + 1 ? "default" : "ghost"}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </Button>
             ))}
-            <Button size="sm" variant="outline" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>Next</Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </Button>
           </div>
         </div>
       </div>
@@ -221,14 +344,27 @@ function ReturnsList() {
       {selected.size > 0 && (
         <div className="fixed bottom-20 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full border bg-card px-4 py-2 shadow-lg lr-fade-up lg:bottom-6">
           <span className="text-sm font-medium">{selected.size} selected</span>
-          <Button size="sm" className="bg-success text-success-foreground hover:bg-success/90" onClick={handleBulkApprove}>
+          <Button
+            size="sm"
+            className="bg-success text-success-foreground hover:bg-success/90"
+            onClick={handleBulkApprove}
+          >
             Approve all
           </Button>
-          <Button size="sm" variant="outline" className="border-destructive/30 text-destructive hover:bg-destructive/10" onClick={handleBulkReject}>
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-destructive/30 text-destructive hover:bg-destructive/10"
+            onClick={handleBulkReject}
+          >
             Reject all
           </Button>
-          <Button size="sm" variant="ghost" onClick={exportCsv}>Export</Button>
-          <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>✕</Button>
+          <Button size="sm" variant="ghost" onClick={exportCsv}>
+            Export
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+            ✕
+          </Button>
         </div>
       )}
     </div>

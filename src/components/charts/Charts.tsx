@@ -14,11 +14,24 @@ export function DonutChart({
   const r = size / 2 - thickness / 2;
   const c = 2 * Math.PI * r;
   let offset = 0;
-  const colors = ["var(--primary)", "var(--info)", "var(--success)", "var(--warning)", "var(--destructive)"];
+  const colors = [
+    "var(--primary)",
+    "var(--info)",
+    "var(--success)",
+    "var(--warning)",
+    "var(--destructive)",
+  ];
   return (
     <div className="flex items-center justify-center">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--muted)" strokeWidth={thickness} fill="none" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke="var(--muted)"
+          strokeWidth={thickness}
+          fill="none"
+        />
         {data.map((d, i) => {
           const len = (d.value / total) * c;
           const dasharray = `${len} ${c - len}`;
@@ -132,7 +145,14 @@ export function Sparkline({
     .join(" ");
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={cn(className)}>
-      <polyline fill="none" stroke={color} strokeWidth="2" points={pts} strokeLinecap="round" strokeLinejoin="round" />
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        points={pts}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -149,14 +169,19 @@ export function StackedBar({
     <div className="space-y-3">
       <div className="flex w-full overflow-hidden rounded-full bg-muted" style={{ height }}>
         {segments.map((s) => (
-          <div key={s.label} style={{ width: `${(s.value / total) * 100}%`, background: s.color }} title={`${s.label}: ${s.value}`} />
+          <div
+            key={s.label}
+            style={{ width: `${(s.value / total) * 100}%`, background: s.color }}
+            title={`${s.label}: ${s.value}`}
+          />
         ))}
       </div>
       <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
         {segments.map((s) => (
           <li key={s.label} className="flex items-center gap-1.5 text-muted-foreground">
             <span className="h-2 w-2 rounded-sm" style={{ background: s.color }} />
-            {s.label} <span className="text-foreground">{Math.round((s.value / total) * 100)}%</span>
+            {s.label}{" "}
+            <span className="text-foreground">{Math.round((s.value / total) * 100)}%</span>
           </li>
         ))}
       </ul>

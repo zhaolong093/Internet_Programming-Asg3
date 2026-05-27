@@ -16,12 +16,13 @@ function load(): ReturnItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : mockReturns;
-  } catch { return mockReturns; }
+  } catch {
+    return mockReturns;
+  }
 }
 
 function save(returns: ReturnItem[]) {
-  if (typeof window !== "undefined")
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(returns));
+  if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEY, JSON.stringify(returns));
 }
 
 export const useReturnStore = create<ReturnState>((set, get) => ({
@@ -29,7 +30,7 @@ export const useReturnStore = create<ReturnState>((set, get) => ({
 
   updateStatus: (id, status) => {
     const updated = get().returns.map((r) =>
-      r.id === id ? { ...r, status, updatedAt: new Date().toISOString() } : r
+      r.id === id ? { ...r, status, updatedAt: new Date().toISOString() } : r,
     );
     save(updated);
     set({ returns: updated });
@@ -50,7 +51,7 @@ export const useReturnStore = create<ReturnState>((set, get) => ({
               },
             ],
           }
-        : r
+        : r,
     );
     save(updated);
     set({ returns: updated });
@@ -59,7 +60,7 @@ export const useReturnStore = create<ReturnState>((set, get) => ({
   bulkUpdateStatus: (ids, status) => {
     const idSet = new Set(ids);
     const updated = get().returns.map((r) =>
-      idSet.has(r.id) ? { ...r, status, updatedAt: new Date().toISOString() } : r
+      idSet.has(r.id) ? { ...r, status, updatedAt: new Date().toISOString() } : r,
     );
     save(updated);
     set({ returns: updated });

@@ -1,70 +1,82 @@
+import { randomUUID } from "node:crypto";
 import { Router } from "express";
 import bcrypt from "bcryptjs";
+import { createToken } from "../middleware/auth.mjs";
 import { User } from "../models/User.mjs";
 
 export const authRouter = Router();
 
-// Register — hashes password, saves customer to MongoDB
-authRouter.post("/register", async (req, res) => {
+function publicUser(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    initials: user.initials,
+  };
+}
+
+function initialsFor(name) {
+  return String(name)
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+authRouter.post("/register", async (req, res, next) => {
   try {
-    const { id, name, email, role, initials, password } = req.body;
-    if (!email) { res.status(400).json({ message: "Email required." }); return; }
+    const name = String(req.body.name ?? "").trim();
+    const email = String(req.body.email ?? "")
+      .trim()
+      .toLowerCase();
+    const password = String(req.body.password ?? "");
 
-    const existing = await User.findOne({ email: email.toLowerCase() });
-    if (existing) { res.status(409).json({ message: "Email already registered." }); return; }
+    if (!name || !email || password.length < 8) {
+      return res
+        .status(400)
+        .json({ message: "Name, email and an 8 character password are required." });
+    }
 
-    const passwordHash = password
-      ? await bcrypt.hash(password, 12)
-      : null;
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(409).json({ message: "Email already registered." });
+    }
 
     const user = await User.create({
-      id,
+      id: `u-${randomUUID()}`,
       name,
-      email: email.toLowerCase(),
-      role:  role ?? "customer",
-      initials,
-      passwordHash,
+      email,
+      role: "customer",
+      initials: initialsFor(name),
+      passwordHash: await bcrypt.hash(password, 12),
     });
 
-    res.status(201).json({
-      user: {
-        id:       user.id,
-        name:     user.name,
-        email:    user.email,
-        role:     user.role,
-        initials: user.initials,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(201).json({ user: publicUser(user), token: createToken(user) });
+  } catch (error) {
+    next(error);
   }
 });
 
-// Login — verifies password hash
-authRouter.post("/login", async (req, res) => {
+authRouter.post("/login", async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    if (!email) { res.status(400).json({ message: "Email required." }); return; }
+    const email = String(req.body.email ?? "")
+      .trim()
+      .toLowerCase();
+    const password = String(req.body.password ?? "");
 
-    const user = await User.findOne({ email: email.toLowerCase() }).lean();
-    if (!user) { res.status(404).json({ message: "No account found with that email." }); return; }
-
-    // Only check password if the account has one set
-    if (user.passwordHash && password) {
-      const valid = await bcrypt.compare(password, user.passwordHash);
-      if (!valid) { res.status(401).json({ message: "Incorrect password." }); return; }
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required." });
     }
 
-    res.json({
-      user: {
-        id:       user.id,
-        name:     user.name,
-        email:    user.email,
-        role:     user.role,
-        initials: user.initials,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const user = await User.findOne({ email });
+    if (!user?.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
+      return res.status(401).json({ message: "Invalid email or password." });
+    }
+
+    res.json({ user: publicUser(user), token: createToken(user) });
+  } catch (error) {
+    next(error);
   }
 });
