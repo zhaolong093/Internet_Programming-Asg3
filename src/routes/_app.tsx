@@ -5,6 +5,7 @@ import { Topbar } from "@/components/layout/Topbar";
 import { CommandPalette } from "@/components/common/CommandPalette";
 import { NotificationPanel } from "@/components/common/NotificationPanel";
 import { useAuthStore } from "@/stores/auth-store";
+import {useUserStore} from "@/stores/user-store";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 export const Route = createFileRoute("/_app")({
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_app")({
 function AppShell() {
   const isAuth = useAuthStore((s) => s.isAuthenticated);
   const role = useAuthStore((s) => s.user?.role);
+  const loadUsers = useUserStore((s) => s.loadUsers);
   const hydrate = useAuthStore((s) => s.hydrate);
   const [ready, setReady] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,6 +36,11 @@ function AppShell() {
       window.location.replace("/store");
     }
   }, [ready, isAuth, role]);
+
+  useEffect(() => {
+    if (!ready || !isAuth || role ==="customer") return;
+    loadUsers();
+  }, [ready, isAuth, role, loadUsers]);
 
   if (!ready) return <div className="min-h-screen bg-background" />;
   if (!isAuth || role === "customer") return null;
