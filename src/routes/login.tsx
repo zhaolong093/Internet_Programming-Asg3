@@ -65,8 +65,8 @@ function LoginPage() {
     // [BACKEND HOOK] POST /api/auth/login { email, password }
     await new Promise((r) => setTimeout(r, 700));
     try {
-      const user = await login(email, undefined, password);
-      addUser(user); 
+      const user = await login(email, password);
+      addUser(user);
       toast.success(`Welcome back, ${user.name}!`);
       window.location.replace(user.role === "customer" ? "/store" : "/dashboard"); // Force full reload to reset all stores and avoid SSR hydration issues
     } catch {
@@ -85,7 +85,11 @@ function LoginPage() {
           <Logo invert size="md" />
         </div>
         <div className="relative max-w-lg">
-          <h1 className="font-display text-5xl font-bold leading-tight">Returns,<br />Reimagined.</h1>
+          <h1 className="font-display text-5xl font-bold leading-tight">
+            Returns,
+            <br />
+            Reimagined.
+          </h1>
           <p className="mt-4 text-lg text-slate-300">
             The smartest way to manage product returns at scale.
           </p>
@@ -204,7 +208,9 @@ function LoginPage() {
                 Create one
               </a>
               {" . "}
-              <a href="/store" className="font-medium text-primary hover:underline">Browse as guest</a>
+              <a href="/store" className="font-medium text-primary hover:underline">
+                Browse as guest
+              </a>
             </p>
           </form>
         </div>
@@ -216,7 +222,10 @@ function LoginPage() {
 function GoogleIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4-5.5 4-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.9 1.5l2.6-2.5C16.9 3.6 14.7 2.7 12 2.7 6.9 2.7 2.7 6.9 2.7 12s4.2 9.3 9.3 9.3c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1.1-.2-1.5H12z"/>
+      <path
+        fill="#EA4335"
+        d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4-5.5 4-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.9 1.5l2.6-2.5C16.9 3.6 14.7 2.7 12 2.7 6.9 2.7 2.7 6.9 2.7 12s4.2 9.3 9.3 9.3c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1.1-.2-1.5H12z"
+      />
     </svg>
   );
 }

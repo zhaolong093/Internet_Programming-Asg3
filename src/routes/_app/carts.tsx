@@ -4,6 +4,7 @@ import { RefreshCw, Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/common/PageHeader";
+import { API_BASE, apiHeaders } from "@/lib/api";
 import type { CartItem } from "@/stores/cart-store";
 
 export const Route = createFileRoute("/_app/carts")({
@@ -19,8 +20,6 @@ interface CustomerCart {
   updatedAt: string;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
-
 function CartsPage() {
   const [carts, setCarts] = useState<CustomerCart[]>([]);
   const [search, setSearch] = useState("");
@@ -31,7 +30,7 @@ function CartsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE}/api/carts`);
+      const response = await fetch(`${API_BASE}/api/carts`, { headers: apiHeaders() });
       if (!response.ok) throw new Error("Could not load active carts.");
       setCarts(await response.json());
     } catch (error) {

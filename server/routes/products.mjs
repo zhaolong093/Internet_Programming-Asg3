@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAuth, requireRole } from "../middleware/auth.mjs";
 import { Product } from "../models/Product.mjs";
 
 export const productRouter = express.Router();
@@ -52,7 +53,7 @@ productRouter.get("/", async (req, res, next) => {
   }
 });
 
-productRouter.post("/", async (req, res, next) => {
+productRouter.post("/", requireAuth, requireRole("admin", "staff"), async (req, res, next) => {
   try {
     const payload = productPayload(req.body);
     const errors = validateProduct(payload);
@@ -70,7 +71,7 @@ productRouter.post("/", async (req, res, next) => {
   }
 });
 
-productRouter.put("/:id", async (req, res, next) => {
+productRouter.put("/:id", requireAuth, requireRole("admin", "staff"), async (req, res, next) => {
   try {
     const payload = productPayload(req.body);
     const errors = validateProduct(payload);
@@ -96,7 +97,7 @@ productRouter.put("/:id", async (req, res, next) => {
   }
 });
 
-productRouter.delete("/:id", async (req, res, next) => {
+productRouter.delete("/:id", requireAuth, requireRole("admin", "staff"), async (req, res, next) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) {

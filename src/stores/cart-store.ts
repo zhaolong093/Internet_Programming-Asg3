@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { API_BASE, apiHeaders } from "@/lib/api";
 import type { AuthUser } from "./auth-store";
 
 export interface CartItem {
@@ -22,11 +23,9 @@ interface CartState {
   clear: () => Promise<void>;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
-
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers: apiHeaders(),
     ...init,
   });
 

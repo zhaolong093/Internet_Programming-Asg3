@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAuth, requireRole } from "../middleware/auth.mjs";
 import { Cart } from "../models/Cart.mjs";
 import { Order } from "../models/Order.mjs";
 import { Product } from "../models/Product.mjs";
@@ -22,7 +23,7 @@ function addressPayload(body) {
   };
 }
 
-orderRouter.get("/", async (_req, res, next) => {
+orderRouter.get("/", requireAuth, requireRole("admin", "staff"), async (_req, res, next) => {
   try {
     const orders = await Order.find({}).sort({ createdAt: -1 });
     res.json(orders);
@@ -31,12 +32,10 @@ orderRouter.get("/", async (_req, res, next) => {
   }
 });
 
-orderRouter.post("/", async (req, res, next) => {
+orderRouter.post("/", requireAuth, async (req, res, next) => {
   try {
-    const customerName = String(req.body.customerName ?? "").trim();
-    const customerEmail = String(req.body.customerEmail ?? "")
-      .trim()
-      .toLowerCase();
+    const customerName = req.user.name;
+    const customerEmail = req.user.email;
     const address = addressPayload(req.body.address ?? {});
     const requestItems = Array.isArray(req.body.items) ? req.body.items : [];
 
@@ -94,39 +93,49 @@ orderRouter.post("/", async (req, res, next) => {
   }
 });
 
-orderRouter.patch("/:orderNumber", async (req, res, next) => {
-  try {
-    const update = {};
-    if (req.body.status !== undefined) {
-      if (!statuses.has(req.body.status)) {
-        return res.status(400).json({ message: "Invalid order status." });
+orderRouter.patch(
+  "/:orderNumber",
+  requireAuth,
+  requireRole("admin", "staff"),
+  async (req, res, next) => {
+    try {
+      const update = {};
+      if (req.body.status !== undefined) {
+        if (!statuses.has(req.body.status)) {
+          return res.status(400).json({ message: "Invalid order status." });
+        }
+        update.status = req.body.status;
       }
-      update.status = req.body.status;
+      if (req.body.adminNote !== undefined) {
+        update.adminNote = String(req.body.adminNote).trim();
+      }
+      const order = await Order.findOneAndUpdate({ orderNumber: req.params.orderNumber }, update, {
+        new: true,
+        runValidators: true,
+      });
+      if (!order) {
+        return res.status(404).json({ message: "Order not found." });
+      }
+      res.json(order);
+    } catch (error) {
+      next(error);
     }
-    if (req.body.adminNote !== undefined) {
-      update.adminNote = String(req.body.adminNote).trim();
-    }
-    const order = await Order.findOneAndUpdate({ orderNumber: req.params.orderNumber }, update, {
-      new: true,
-      runValidators: true,
-    });
-    if (!order) {
-      return res.status(404).json({ message: "Order not found." });
-    }
-    res.json(order);
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
-orderRouter.delete("/:orderNumber", async (req, res, next) => {
-  try {
-    const order = await Order.findOneAndDelete({ orderNumber: req.params.orderNumber });
-    if (!order) {
-      return res.status(404).json({ message: "Order not found." });
+orderRouter.delete(
+  "/:orderNumber",
+  requireAuth,
+  requireRole("admin", "staff"),
+  async (req, res, next) => {
+    try {
+      const order = await Order.findOneAndDelete({ orderNumber: req.params.orderNumber });
+      if (!order) {
+        return res.status(404).json({ message: "Order not found." });
+      }
+      res.status(204).end();
+    } catch (error) {
+      next(error);
     }
-    res.status(204).end();
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
