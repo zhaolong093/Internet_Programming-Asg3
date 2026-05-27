@@ -15,15 +15,17 @@ export const Route = createFileRoute("/register")({
   component: RegisterPage,
 });
 
-const schema = z.object({
-  name: z.string().min(2, "Enter your full name."),
-  email: z.string().email("Enter a valid email."),
-  password: z.string().min(8, "Use at least 8 characters."),
-  confirm: z.string(),
-}).refine((d) => d.password === d.confirm, {
-  message: "Passwords do not match.",
-  path: ["confirm"],
-});
+const schema = z
+  .object({
+    name: z.string().min(2, "Enter your full name."),
+    email: z.string().email("Enter a valid email."),
+    password: z.string().min(8, "Use at least 8 characters."),
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, {
+    message: "Passwords do not match.",
+    path: ["confirm"],
+  });
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -39,7 +41,10 @@ function RegisterPage() {
 
   function validate() {
     const result = schema.safeParse(form);
-    if (result.success) { setErrors({}); return true; }
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
     const e: Record<string, string> = {};
     for (const issue of result.error.issues) e[issue.path[0]] = issue.message;
     setErrors(e);
@@ -84,8 +89,13 @@ function RegisterPage() {
             <Label htmlFor="name">Full Name</Label>
             <div className="relative">
               <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input id="name" className="pl-9" placeholder="Jane Smith"
-                value={form.name} onChange={(e) => set("name", e.target.value)} />
+              <Input
+                id="name"
+                className="pl-9"
+                placeholder="Jane Smith"
+                value={form.name}
+                onChange={(e) => set("name", e.target.value)}
+              />
             </div>
             {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
           </div>
@@ -94,8 +104,14 @@ function RegisterPage() {
             <Label htmlFor="email">Email</Label>
             <div className="relative">
               <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input id="email" type="email" className="pl-9" placeholder="you@email.com"
-                value={form.email} onChange={(e) => set("email", e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                className="pl-9"
+                placeholder="you@email.com"
+                value={form.email}
+                onChange={(e) => set("email", e.target.value)}
+              />
             </div>
             {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
           </div>
@@ -104,8 +120,14 @@ function RegisterPage() {
             <Label htmlFor="password">Password</Label>
             <div className="relative">
               <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input id="password" type="password" className="pl-9" placeholder="At least 8 characters"
-                value={form.password} onChange={(e) => set("password", e.target.value)} />
+              <Input
+                id="password"
+                type="password"
+                className="pl-9"
+                placeholder="At least 8 characters"
+                value={form.password}
+                onChange={(e) => set("password", e.target.value)}
+              />
             </div>
             {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
           </div>
@@ -114,19 +136,33 @@ function RegisterPage() {
             <Label htmlFor="confirm">Confirm Password</Label>
             <div className="relative">
               <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input id="confirm" type="password" className="pl-9" placeholder="Repeat password"
-                value={form.confirm} onChange={(e) => set("confirm", e.target.value)} />
+              <Input
+                id="confirm"
+                type="password"
+                className="pl-9"
+                placeholder="Repeat password"
+                value={form.confirm}
+                onChange={(e) => set("confirm", e.target.value)}
+              />
             </div>
             {errors.confirm && <p className="text-xs text-destructive">{errors.confirm}</p>}
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Create Account <ArrowRight className="ml-1 h-4 w-4" /></>}
+            {submitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                Create Account <ArrowRight className="ml-1 h-4 w-4" />
+              </>
+            )}
           </Button>
 
           <p className="pt-2 text-center text-xs text-muted-foreground">
             Already have an account?{" "}
-            <a href="/login" className="font-medium text-primary hover:underline">Sign in</a>
+            <a href="/login" className="font-medium text-primary hover:underline">
+              Sign in
+            </a>
           </p>
         </form>
       </div>

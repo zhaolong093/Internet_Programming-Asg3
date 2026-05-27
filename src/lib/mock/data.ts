@@ -7,30 +7,52 @@ import type {
   ReturnStatus,
 } from "./types";
 
-const reasons: ReturnReason[] = [
-  "Wrong Item",
-  "Damaged",
-  "Changed Mind",
-  "Quality Issue",
-  "Other",
-];
-const statuses: ReturnStatus[] = [
-  "pending",
-  "approved",
-  "rejected",
-  "processing",
-  "refunded",
-];
+const reasons: ReturnReason[] = ["Wrong Item", "Damaged", "Changed Mind", "Quality Issue", "Other"];
+const statuses: ReturnStatus[] = ["pending", "approved", "rejected", "processing", "refunded"];
 
 const firstNames = [
-  "Olivia", "Liam", "Emma", "Noah", "Sophia", "Mason", "Ava", "Lucas",
-  "Mia", "Ethan", "Isabella", "Aiden", "Amelia", "Logan", "Harper",
-  "Jacob", "Evelyn", "Michael", "Abigail", "Daniel",
+  "Olivia",
+  "Liam",
+  "Emma",
+  "Noah",
+  "Sophia",
+  "Mason",
+  "Ava",
+  "Lucas",
+  "Mia",
+  "Ethan",
+  "Isabella",
+  "Aiden",
+  "Amelia",
+  "Logan",
+  "Harper",
+  "Jacob",
+  "Evelyn",
+  "Michael",
+  "Abigail",
+  "Daniel",
 ];
 const lastNames = [
-  "Carter", "Bennett", "Hughes", "Foster", "Nguyen", "Patel", "García",
-  "Khan", "Reyes", "Walker", "Brooks", "Murphy", "Coleman", "Hayes",
-  "Sullivan", "Pierce", "Romero", "Jenkins", "Holland", "Diaz",
+  "Carter",
+  "Bennett",
+  "Hughes",
+  "Foster",
+  "Nguyen",
+  "Patel",
+  "García",
+  "Khan",
+  "Reyes",
+  "Walker",
+  "Brooks",
+  "Murphy",
+  "Coleman",
+  "Hayes",
+  "Sullivan",
+  "Pierce",
+  "Romero",
+  "Jenkins",
+  "Holland",
+  "Diaz",
 ];
 const products = [
   { name: "Aurora Wool Coat", sku: "AWC-1042", variant: "Size: L, Color: Navy", price: 289 },
@@ -63,7 +85,7 @@ function seedRandom(seed: number) {
 }
 
 const rand = seedRandom(42);
-const pick = <T,>(arr: T[]) => arr[Math.floor(rand() * arr.length)];
+const pick = <T>(arr: T[]) => arr[Math.floor(rand() * arr.length)];
 
 function daysAgo(d: number) {
   const date = new Date();
@@ -91,7 +113,7 @@ export const customers: Customer[] = Array.from({ length: 36 }).map((_, i) => {
     totalOrders: orders,
     totalReturns: returns,
     returnRate: Math.round((returns / orders) * 100),
-    ltv: Math.round((orders * (80 + rand() * 240)) * 100) / 100,
+    ltv: Math.round(orders * (80 + rand() * 240) * 100) / 100,
     status: flagged ? "Flagged" : i % 17 === 0 ? "Blocked" : "Active",
     lastActivity: daysAgo(Math.floor(rand() * 40)),
     customerSince: daysAgo(120 + Math.floor(rand() * 900)),
@@ -136,21 +158,59 @@ export const returns: ReturnItem[] = Array.from({ length: 48 }).map((_, i) => {
 
 export const activity: ActivityEvent[] = [
   { id: "a1", type: "approved", message: "Jordan approved return #RTN-00287", ts: minsAgo(2) },
-  { id: "a2", type: "submitted", message: "New return #RTN-00290 submitted by Olivia Carter", ts: minsAgo(14) },
-  { id: "a3", type: "refunded", message: "Refund of $149.00 issued for #RTN-00284", ts: minsAgo(48) },
+  {
+    id: "a2",
+    type: "submitted",
+    message: "New return #RTN-00290 submitted by Olivia Carter",
+    ts: minsAgo(14),
+  },
+  {
+    id: "a3",
+    type: "refunded",
+    message: "Refund of $149.00 issued for #RTN-00284",
+    ts: minsAgo(48),
+  },
   { id: "a4", type: "rejected", message: "Mira rejected return #RTN-00281", ts: minsAgo(120) },
   { id: "a5", type: "note", message: "Note added to #RTN-00279 by Priya", ts: minsAgo(190) },
   { id: "a6", type: "approved", message: "Jordan approved return #RTN-00276", ts: minsAgo(310) },
 ];
 
-
-
 export const notifications: AppNotification[] = [
-  { id: "n1", type: "new", message: "New return submitted: #RTN-00290", ts: minsAgo(5), read: false },
-  { id: "n2", type: "approved", message: "Refund issued for #RTN-00284", ts: minsAgo(60), read: false },
-  { id: "n3", type: "flagged", message: "Customer flagged: high return rate", ts: minsAgo(180), read: false },
-  { id: "n4", type: "system", message: "Weekly report is ready to view", ts: minsAgo(240), read: true },
-  { id: "n5", type: "approved", message: "Refund issued for #RTN-00270", ts: minsAgo(720), read: true },
+  {
+    id: "n1",
+    type: "new",
+    message: "New return submitted: #RTN-00290",
+    ts: minsAgo(5),
+    read: false,
+  },
+  {
+    id: "n2",
+    type: "approved",
+    message: "Refund issued for #RTN-00284",
+    ts: minsAgo(60),
+    read: false,
+  },
+  {
+    id: "n3",
+    type: "flagged",
+    message: "Customer flagged: high return rate",
+    ts: minsAgo(180),
+    read: false,
+  },
+  {
+    id: "n4",
+    type: "system",
+    message: "Weekly report is ready to view",
+    ts: minsAgo(240),
+    read: true,
+  },
+  {
+    id: "n5",
+    type: "approved",
+    message: "Refund issued for #RTN-00270",
+    ts: minsAgo(720),
+    read: true,
+  },
 ];
 
 export const reasonsBreakdown: { label: ReturnReason; value: number }[] = [
@@ -162,19 +222,54 @@ export const reasonsBreakdown: { label: ReturnReason; value: number }[] = [
 ];
 
 export const monthlyVolume = [
-  { m: "Jun", v: 84 },  { m: "Jul", v: 96 },  { m: "Aug", v: 110 },
-  { m: "Sep", v: 102 }, { m: "Oct", v: 132 }, { m: "Nov", v: 158 },
-  { m: "Dec", v: 201 }, { m: "Jan", v: 124 }, { m: "Feb", v: 138 },
-  { m: "Mar", v: 152 }, { m: "Apr", v: 167 }, { m: "May", v: 184 },
+  { m: "Jun", v: 84 },
+  { m: "Jul", v: 96 },
+  { m: "Aug", v: 110 },
+  { m: "Sep", v: 102 },
+  { m: "Oct", v: 132 },
+  { m: "Nov", v: 158 },
+  { m: "Dec", v: 201 },
+  { m: "Jan", v: 124 },
+  { m: "Feb", v: 138 },
+  { m: "Mar", v: 152 },
+  { m: "Apr", v: 167 },
+  { m: "May", v: 184 },
 ];
 
-export const monthlyRefunds = monthlyVolume.map((m) => ({ m: m.m, v: m.v * (130 + Math.round(Math.random() * 60)) }));
+export const monthlyRefunds = monthlyVolume.map((m) => ({
+  m: m.m,
+  v: m.v * (130 + Math.round(Math.random() * 60)),
+}));
 
 export const team = [
-  { id: "u1", name: "Jordan Reyes", email: "jordan@lreturns.io", role: "Admin", lastActive: minsAgo(3) },
-  { id: "u2", name: "Mira Patel", email: "mira@lreturns.io", role: "Staff", lastActive: minsAgo(45) },
-  { id: "u3", name: "Priya Khan", email: "priya@lreturns.io", role: "Staff", lastActive: minsAgo(180) },
-  { id: "u4", name: "Sam Holland", email: "sam@lreturns.io", role: "Viewer", lastActive: minsAgo(1500) },
+  {
+    id: "u1",
+    name: "Jordan Reyes",
+    email: "jordan@lreturns.io",
+    role: "Admin",
+    lastActive: minsAgo(3),
+  },
+  {
+    id: "u2",
+    name: "Mira Patel",
+    email: "mira@lreturns.io",
+    role: "Staff",
+    lastActive: minsAgo(45),
+  },
+  {
+    id: "u3",
+    name: "Priya Khan",
+    email: "priya@lreturns.io",
+    role: "Staff",
+    lastActive: minsAgo(180),
+  },
+  {
+    id: "u4",
+    name: "Sam Holland",
+    email: "sam@lreturns.io",
+    role: "Viewer",
+    lastActive: minsAgo(1500),
+  },
 ];
 
 export const integrations = [

@@ -16,10 +16,19 @@ const accentMap = {
   primary: "before:bg-primary",
   warning: "before:bg-warning",
   success: "before:bg-success",
-  info:    "before:bg-info",
+  info: "before:bg-info",
 };
 
-export function KpiCard({ label, value, subtitle, trend, accent = "primary", icon: Icon, loading, extra }: Props) {
+export function KpiCard({
+  label,
+  value,
+  subtitle,
+  trend,
+  accent = "primary",
+  icon: Icon,
+  loading,
+  extra,
+}: Props) {
   return (
     <div
       className={cn(

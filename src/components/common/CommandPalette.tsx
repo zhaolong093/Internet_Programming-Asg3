@@ -54,9 +54,7 @@ export function CommandPalette() {
       customers
         .filter(
           (c) =>
-            !lowQ ||
-            c.name.toLowerCase().includes(lowQ) ||
-            c.email.toLowerCase().includes(lowQ),
+            !lowQ || c.name.toLowerCase().includes(lowQ) || c.email.toLowerCase().includes(lowQ),
         )
         .slice(0, 5),
     [lowQ],
@@ -87,13 +85,21 @@ export function CommandPalette() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Search returns, customers, products…" value={q} onValueChange={setQ} />
+      <CommandInput
+        placeholder="Search returns, customers, products…"
+        value={q}
+        onValueChange={setQ}
+      />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         {filteredReturns.length > 0 && (
           <CommandGroup heading="Returns">
             {filteredReturns.map((r) => (
-              <CommandItem key={r.id} value={`${r.id} ${r.customer.name}`} onSelect={() => go(`/returns/${r.id}`)}>
+              <CommandItem
+                key={r.id}
+                value={`${r.id} ${r.customer.name}`}
+                onSelect={() => go(`/returns/${r.id}`)}
+              >
                 <RotateCcw className="mr-2 h-4 w-4 text-primary" />
                 <span className="font-mono text-xs text-primary">{r.id}</span>
                 <span className="ml-2 text-muted-foreground">— {r.customer.name}</span>
@@ -104,7 +110,11 @@ export function CommandPalette() {
         {filteredCustomers.length > 0 && (
           <CommandGroup heading="Customers">
             {filteredCustomers.map((c) => (
-              <CommandItem key={c.id} value={c.name + c.email} onSelect={() => go(`/customers/${c.id}`)}>
+              <CommandItem
+                key={c.id}
+                value={c.name + c.email}
+                onSelect={() => go(`/customers/${c.id}`)}
+              >
                 <User className="mr-2 h-4 w-4" />
                 {c.name}
                 <span className="ml-2 text-xs text-muted-foreground">{c.email}</span>

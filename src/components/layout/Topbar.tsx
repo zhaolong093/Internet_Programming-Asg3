@@ -17,11 +17,11 @@ import { cn } from "@/lib/utils";
 
 const titles: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/returns":   "Returns Management",
-  "/orders":    "Orders",
+  "/returns": "Returns Management",
+  "/orders": "Orders",
   "/customers": "Customers",
-  "/products":  "Products",
-  "/reports":   "Reports & Analytics",
+  "/products": "Products",
+  "/reports": "Reports & Analytics",
 };
 
 export function Topbar({ onMobileMenu }: { onMobileMenu: () => void }) {
@@ -32,12 +32,13 @@ export function Topbar({ onMobileMenu }: { onMobileMenu: () => void }) {
   const setNotif = useUIStore((s) => s.setNotifOpen);
   const theme = useUIStore((s) => s.theme);
   const toggleTheme = useUIStore((s) => s.toggleTheme);
-  const title = Object.entries(titles).find(([k]) => path === k || path.startsWith(k + "/"))?.[1] ?? "Lreturns";
+  const title =
+    Object.entries(titles).find(([k]) => path === k || path.startsWith(k + "/"))?.[1] ?? "Lreturns";
   const today = format(new Date(), "EEEE, d MMMM yyyy");
   const unread = notifications.filter((n) => !n.read).length;
 
   function handleLogout() {
-    logout();                          // clears localStorage + Zustand
+    logout(); // clears localStorage + Zustand
     window.location.replace("/login"); // hard redirect — no router involved
   }
 
@@ -59,23 +60,37 @@ export function Topbar({ onMobileMenu }: { onMobileMenu: () => void }) {
       {/* Search bar */}
       <button
         onClick={() => setCmdk(true)}
-        className={cn("hidden h-9 w-72 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground transition hover:border-ring md:flex")}
+        className={cn(
+          "hidden h-9 w-72 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground transition hover:border-ring md:flex",
+        )}
       >
         <Search className="h-4 w-4" />
         <span className="flex-1 text-left">Search returns, customers…</span>
         <kbd className="rounded border bg-muted px-1.5 py-0.5 text-[10px] font-medium">⌘K</kbd>
       </button>
-      <button onClick={() => setCmdk(true)} className="rounded-md p-2 text-muted-foreground hover:bg-accent md:hidden" aria-label="Search">
+      <button
+        onClick={() => setCmdk(true)}
+        className="rounded-md p-2 text-muted-foreground hover:bg-accent md:hidden"
+        aria-label="Search"
+      >
         <Search className="h-5 w-5" />
       </button>
 
       {/* Theme toggle */}
-      <button onClick={toggleTheme} className="rounded-md p-2 text-muted-foreground hover:bg-accent" aria-label="Toggle theme">
+      <button
+        onClick={toggleTheme}
+        className="rounded-md p-2 text-muted-foreground hover:bg-accent"
+        aria-label="Toggle theme"
+      >
         {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
       </button>
 
       {/* Notifications */}
-      <button onClick={() => setNotif(true)} className="relative rounded-md p-2 text-muted-foreground hover:bg-accent" aria-label="Notifications">
+      <button
+        onClick={() => setNotif(true)}
+        className="relative rounded-md p-2 text-muted-foreground hover:bg-accent"
+        aria-label="Notifications"
+      >
         <Bell className="h-5 w-5" />
         {unread > 0 && (
           <span className="absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
@@ -103,7 +118,11 @@ export function Topbar({ onMobileMenu }: { onMobileMenu: () => void }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={toggleTheme}>
-              {theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+              {theme === "dark" ? (
+                <Sun className="mr-2 h-4 w-4" />
+              ) : (
+                <Moon className="mr-2 h-4 w-4" />
+              )}
               Toggle theme
             </DropdownMenuItem>
             <DropdownMenuSeparator />

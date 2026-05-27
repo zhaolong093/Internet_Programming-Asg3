@@ -15,8 +15,8 @@ export const Route = createFileRoute("/_app/customers")({
 });
 
 const ROLE_BADGE: Record<string, { label: string; className: string }> = {
-  admin:    { label: "Admin",    className: "bg-primary/10 text-primary border-primary/20" },
-  staff:    { label: "Staff",    className: "bg-blue-500/10 text-blue-600 border-blue-200" },
+  admin: { label: "Admin", className: "bg-primary/10 text-primary border-primary/20" },
+  staff: { label: "Staff", className: "bg-blue-500/10 text-blue-600 border-blue-200" },
   customer: { label: "Customer", className: "bg-muted text-muted-foreground border-border" },
 };
 
@@ -28,9 +28,10 @@ function CustomersPage() {
   const [editForm, setEditForm] = useState({ name: "", email: "", role: "customer" as Role });
 
   const filtered = users.filter((u) => {
-    const matchSearch = !search 
-    || u.name.toLowerCase().includes(search.toLowerCase()) 
-    || u.email.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      !search ||
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === "all" || u.role === roleFilter;
     return matchSearch && matchRole;
   });
@@ -48,9 +49,19 @@ function CustomersPage() {
 
   function saveEdit() {
     if (!editId) return;
-    if (!editForm.name.trim()) { toast.error("Name is required."); return; }
-    if (!editForm.email.trim()) { toast.error("Email is required."); return; }
-    updateUser(editId, { name: editForm.name.trim(), email: editForm.email.trim(), role: editForm.role });
+    if (!editForm.name.trim()) {
+      toast.error("Name is required.");
+      return;
+    }
+    if (!editForm.email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+    updateUser(editId, {
+      name: editForm.name.trim(),
+      email: editForm.email.trim(),
+      role: editForm.role,
+    });
     toast.success("User updated.");
     setEditId(null);
   }
@@ -65,7 +76,10 @@ function CustomersPage() {
           { label: "Customers", value: counts.customers, icon: ShoppingBag },
           { label: "Admin / Staff", value: counts.admins, icon: ShieldCheck },
         ].map((s) => (
-          <div key={s.label} className="flex items-center gap-3 rounded-xl border bg-card px-5 py-3 shadow-sm">
+          <div
+            key={s.label}
+            className="flex items-center gap-3 rounded-xl border bg-card px-5 py-3 shadow-sm"
+          >
             <s.icon className="h-5 w-5 text-primary" />
             <div>
               <div className="text-xl font-bold leading-none">{s.value}</div>
@@ -78,12 +92,20 @@ function CustomersPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative max-w-xs flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search by name or email…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+          <Input
+            placeholder="Search by name or email…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
         </div>
         <div className="flex gap-2">
           {(["all", "customer", "admin", "staff"] as const).map((r) => (
-            <button key={r} onClick={() => setRoleFilter(r)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium capitalize transition ${roleFilter === r ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}>
+            <button
+              key={r}
+              onClick={() => setRoleFilter(r)}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium capitalize transition ${roleFilter === r ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+            >
               {r === "all" ? "All" : r}
             </button>
           ))}
@@ -94,7 +116,9 @@ function CustomersPage() {
         <div className="flex flex-col items-center justify-center rounded-xl border bg-card py-20 text-center shadow-sm">
           <Users className="mb-3 h-10 w-10 text-muted-foreground/40" />
           <p className="font-medium text-muted-foreground">
-            {users.length === 0 ? "No users yet — they'll appear here after registering." : "No users match your filters."}
+            {users.length === 0
+              ? "No users yet — they'll appear here after registering."
+              : "No users match your filters."}
           </p>
         </div>
       ) : (
@@ -114,45 +138,83 @@ function CustomersPage() {
                 const badge = ROLE_BADGE[u.role] ?? ROLE_BADGE.customer;
                 const isEditing = editId === u.id;
                 return (
-                  <tr key={u.id} className={`transition-colors ${isEditing ? "bg-primary/5" : "hover:bg-muted/20"}`}>
+                  <tr
+                    key={u.id}
+                    className={`transition-colors ${isEditing ? "bg-primary/5" : "hover:bg-muted/20"}`}
+                  >
                     <td className="px-4 py-3">
                       {isEditing ? (
-                        <Input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} className="h-8 w-36 text-sm" placeholder="Full name" />
+                        <Input
+                          value={editForm.name}
+                          onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                          className="h-8 w-36 text-sm"
+                          placeholder="Full name"
+                        />
                       ) : (
                         <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{u.initials}</div>
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                            {u.initials}
+                          </div>
                           <span className="font-medium">{u.name}</span>
                         </div>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {isEditing ? (
-                        <Input value={editForm.email} onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))} className="h-8 w-48 text-sm" placeholder="email@example.com" />
+                        <Input
+                          value={editForm.email}
+                          onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
+                          className="h-8 w-48 text-sm"
+                          placeholder="email@example.com"
+                        />
                       ) : (
                         <span className="text-muted-foreground">{u.email}</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {isEditing ? (
-                        <select value={editForm.role} onChange={(e) => setEditForm((f) => ({ ...f, role: e.target.value as Role }))}
-                          className="h-8 rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                        <select
+                          value={editForm.role}
+                          onChange={(e) =>
+                            setEditForm((f) => ({ ...f, role: e.target.value as Role }))
+                          }
+                          className="h-8 rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
                           <option value="customer">Customer</option>
                           <option value="staff">Staff</option>
                           <option value="admin">Admin</option>
                         </select>
                       ) : (
-                        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${badge.className}`}>{badge.label}</span>
+                        <span
+                          className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${badge.className}`}
+                        >
+                          {badge.label}
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{u.id}</td>
                     <td className="px-4 py-3 text-right">
                       {isEditing ? (
                         <div className="flex items-center justify-end gap-1">
-                          <Button size="sm" className="h-7 px-2" onClick={saveEdit}><Check className="h-3.5 w-3.5" /></Button>
-                          <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setEditId(null)}><X className="h-3.5 w-3.5" /></Button>
+                          <Button size="sm" className="h-7 px-2" onClick={saveEdit}>
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2"
+                            onClick={() => setEditId(null)}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
                         </div>
                       ) : (
-                        <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => startEdit(u)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 px-2"
+                          onClick={() => startEdit(u)}
+                        >
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
                       )}

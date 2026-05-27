@@ -19,7 +19,9 @@ export function EmptyState({
       </div>
       <div>
         <div className="font-medium">{title}</div>
-        {description ? <div className="mt-1 text-sm text-muted-foreground">{description}</div> : null}
+        {description ? (
+          <div className="mt-1 text-sm text-muted-foreground">{description}</div>
+        ) : null}
       </div>
       {action ? (
         <Button size="sm" variant="outline" onClick={action.onClick}>

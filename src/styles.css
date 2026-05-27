@@ -169,32 +169,58 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6, .font-display {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-display {
     font-family: var(--font-display);
     letter-spacing: -0.01em;
   }
 }
 
 @keyframes lr-fade-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes lr-skeleton {
-  0%   { opacity: 0.55; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 @keyframes lr-slide-in-right {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
-.lr-page-enter { animation: lr-fade-up 220ms ease-out both; }
-.lr-fade-up { animation: lr-fade-up 400ms ease-out both; }
+.lr-page-enter {
+  animation: lr-fade-up 220ms ease-out both;
+}
+.lr-fade-up {
+  animation: lr-fade-up 400ms ease-out both;
+}
 .lr-skeleton {
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     color-mix(in oklab, var(--muted) 80%, transparent),
     color-mix(in oklab, var(--muted) 60%, transparent),
-    color-mix(in oklab, var(--muted) 80%, transparent));
+    color-mix(in oklab, var(--muted) 80%, transparent)
+  );
   background-size: 200% 100%;
   animation: lr-skeleton 1.5s ease-in-out infinite alternate;
   border-radius: 6px;
@@ -213,7 +239,14 @@
 }
 
 @media print {
-  .no-print { display: none !important; }
-  .print-block { display: block !important; }
-  body { background: white !important; color: black !important; }
+  .no-print {
+    display: none !important;
+  }
+  .print-block {
+    display: block !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
 }

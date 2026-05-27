@@ -77,10 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Lreturns — Returns, Reimagined." },
-      { name: "description", content: "Lreturns is the smartest way to manage product returns at scale." },
+      {
+        name: "description",
+        content: "Lreturns is the smartest way to manage product returns at scale.",
+      },
       { name: "author", content: "Lreturns" },
       { property: "og:title", content: "Lreturns — Returns, Reimagined." },
-      { property: "og:description", content: "The smartest way to manage product returns at scale." },
+      {
+        property: "og:description",
+        content: "The smartest way to manage product returns at scale.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },

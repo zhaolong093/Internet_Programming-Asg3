@@ -16,7 +16,13 @@ export function LogoMark({ className }: { className?: string }) {
           strokeWidth="2.4"
           strokeLinecap="round"
         />
-        <path d="M20 4v4h-4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M20 4v4h-4"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     </span>
   );
@@ -33,8 +39,7 @@ export function Logo({
 }) {
   const dims =
     size === "sm" ? "h-7 w-7 text-base" : size === "lg" ? "h-12 w-12 text-2xl" : "h-9 w-9 text-lg";
-  const text =
-    size === "sm" ? "text-base" : size === "lg" ? "text-2xl" : "text-lg";
+  const text = size === "sm" ? "text-base" : size === "lg" ? "text-2xl" : "text-lg";
   return (
     <div className={cn("flex items-center gap-2.5", className)}>
       <LogoMark className={dims} />

@@ -2,11 +2,11 @@ import { cn } from "@/lib/utils";
 import type { ReturnStatus } from "@/lib/mock/types";
 
 const map: Record<ReturnStatus, { label: string; cls: string }> = {
-  pending:    { label: "Pending",    cls: "bg-warning/15 text-warning-foreground ring-warning/30" },
-  approved:   { label: "Approved",   cls: "bg-success/15 text-success ring-success/30" },
-  rejected:   { label: "Rejected",   cls: "bg-destructive/15 text-destructive ring-destructive/30" },
+  pending: { label: "Pending", cls: "bg-warning/15 text-warning-foreground ring-warning/30" },
+  approved: { label: "Approved", cls: "bg-success/15 text-success ring-success/30" },
+  rejected: { label: "Rejected", cls: "bg-destructive/15 text-destructive ring-destructive/30" },
   processing: { label: "Processing", cls: "bg-info/15 text-info ring-info/30" },
-  refunded:   { label: "Refunded",   cls: "bg-primary/10 text-primary ring-primary/30" },
+  refunded: { label: "Refunded", cls: "bg-primary/10 text-primary ring-primary/30" },
 };
 
 export function StatusBadge({ status, large }: { status: ReturnStatus; large?: boolean }) {
@@ -26,11 +26,11 @@ export function StatusBadge({ status, large }: { status: ReturnStatus; large?: b
 }
 
 const reasonColors: Record<string, string> = {
-  "Wrong Item":    "bg-info/15 text-info",
-  "Damaged":       "bg-destructive/15 text-destructive",
-  "Changed Mind":  "bg-muted text-muted-foreground",
+  "Wrong Item": "bg-info/15 text-info",
+  Damaged: "bg-destructive/15 text-destructive",
+  "Changed Mind": "bg-muted text-muted-foreground",
   "Quality Issue": "bg-warning/15 text-warning-foreground",
-  "Other":         "bg-secondary text-secondary-foreground",
+  Other: "bg-secondary text-secondary-foreground",
 };
 
 export function ReasonBadge({ reason }: { reason: string }) {
